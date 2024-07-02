@@ -15,20 +15,12 @@ Features
 Installation
 ------------
 
-1. Clone the Repository:
-  - Open a terminal and navigate to your preferred directory.
-  - Run the following command to clone the repository:
-  `git clone https://github.com/Sush-ruta/nautilus-upload-to.git`
-  
-2. Copy Scripts to Nautilus Folder:
-  - Navigate to the cloned repository folder:
-  `cd nautilus-upload-to`
-  - Copy the contents of the `Upload to` folder to the Nautilus scripts directory:
-  `cp -r "Upload to" "$HOME/.local/share/nautilus/scripts/"``
-
-3. Set Executable Permissions:
-  - Make the scripts executable:
-  `chmod +x "$HOME/.local/share/nautilus/scripts/"*`
+```bash
+git clone https://github.com/Sush-ruta/nautilus-upload-to.git
+cd nautilus-upload-to
+cp -r "Upload to" "$HOME/.local/share/nautilus/scripts/"
+chmod +x "$HOME/.local/share/nautilus/scripts/"*
+```
 
 Services
 --------
