@@ -15,49 +15,27 @@ Features
 Installation
 ------------
 
-1.  Clone the Repository:
+1. Clone the Repository:
+  - Open a terminal and navigate to your preferred directory.
+  - Run the following command to clone the repository:
+  `git clone https://github.com/Sush-ruta/nautilus-upload-to.git`
+  
+2. Copy Scripts to Nautilus Folder:
+  - Navigate to the cloned repository folder:
+  `cd nautilus-upload-to`
+  - Copy the contents of the `Upload to` folder to the Nautilus scripts directory:
+  `cp -r "Upload to" "$HOME/.local/share/nautilus/scripts/"``
 
-    -   Open a terminal and navigate to your preferred directory.
-    -   Run the following command to clone the repository:
-
-        ```
-        git clone https://github.com/Sush-ruta/nautilus-upload-to.git
-
-        ```
-
-2.  Copy Scripts to Nautilus Folder:
-
-    -   Navigate to the cloned repository folder:
-
-        ```
-        cd nautilus-upload-to
-
-        ```
-
-    -   Copy the contents of the `Upload to` folder to the Nautilus scripts directory:
-
-        ```
-        cp -r "Upload to" "$HOME/.local/share/nautilus/scripts/"
-
-        ```
-
-3.  Set Executable Permissions:
-
-    -   Make the scripts executable:
-
-        ```
-        chmod +x "$HOME/.local/share/nautilus/scripts/"*
-
-        ```
+3. Set Executable Permissions:
+  - Make the scripts executable:
+  `chmod +x "$HOME/.local/share/nautilus/scripts/"*`
 
 Services
 --------
 
-Table
-
 | Service | Description |
 | --- | --- |
-| [0x0[(https://0x0.st/) | Anonymous file hosting with a simple web interface. |
+| [0x0](https://0x0.st/) | Anonymous file hosting with a simple web interface. |
 | [bashupload](https://bashupload.com/) | Upload files via a straightforward command-line interface. |
 | [Catbox](https://catbox.moe/) | Image and file hosting with a focus on privacy. |
 | [File Doge](https://filedoge.com/) | Easy file sharing with a cute doge mascot. |
