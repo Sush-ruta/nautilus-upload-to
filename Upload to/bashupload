@@ -1,0 +1,31 @@
+#!/bin/bash
+
+# Function to upload file to bashupload
+upload_file() {
+    FILE_PATH="$1"
+    FILE_NAME=$(basename "$FILE_PATH")
+    API_URL="https://bashupload.com/"
+    
+    # Upload the file and capture the response
+    RESPONSE=$(curl --silent --show-error --upload-file "$FILE_PATH" "$API_URL")
+    
+    # Check if the upload was successful
+    if [[ "$RESPONSE" == *"wget https://bashupload.com"* ]]; then
+        # Extract the URL from the response
+        FILE_URL=$(echo "$RESPONSE" | grep "wget" | awk '{print $2}')
+        
+        # Copy the URL to the clipboard
+        echo "$FILE_URL" | xclip -selection clipboard
+        
+        # Show success message
+        zenity --info --title="Upload Complete" --text="File uploaded successfully.\nURL copied to clipboard: $FILE_URL"
+    else
+        # Show error message
+        zenity --error --title="Error" --text="Failed to upload file."
+    fi
+}
+
+# Main script
+for FILE in "$@"; do
+    upload_file "$FILE"
+done

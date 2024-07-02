@@ -1,0 +1,71 @@
+#!/bin/bash
+
+# Function to upload file to Catbox
+upload_file() {
+    FILE_PATH="$1"
+    CONF_FILE="$HOME/.config/Catboxer.conf"
+    TEMP_ZIP="/tmp/temp_upload.zip"
+    
+    # Check if config file exists and read userhash
+    if [ ! -f "$CONF_FILE" ]; then
+        echo "Creating configuration file with default values..."
+        echo "userhash=" > "$CONF_FILE"
+    fi
+
+    source "$CONF_FILE"
+    
+    if [ -z "$userhash" ]; then
+        zenity --info --title="Uploading Anonymously" --text="No userhash found. Uploading anonymously."
+    else
+        zenity --info --title="Uploading to Account" --text="Userhash found. Uploading to logged in account."
+    fi
+
+    # Check if file size is greater than 200MB
+    if [ $(stat -c%s "$FILE_PATH") -gt 209715200 ]; then
+        zenity --error --title="Error" --text="Only files less than 200MB are allowed."
+        exit 1
+    fi
+
+    # Prepare data for upload
+    if [ -d "$FILE_PATH" ]; then
+        zenity --info --title="Directory Upload" --text="Given path is a directory, proceeding to upload as zip."
+        zip -r "$TEMP_ZIP" "$FILE_PATH"
+        FILE_PATH="$TEMP_ZIP"
+    fi
+
+    # Blacklisted extensions by Catbox
+    BLACKLIST=(".exe" ".jar" ".doc" ".docx" ".cpl" ".scr")
+    EXT="${FILE_PATH##*.}"
+    
+    if [[ " ${BLACKLIST[@]} " =~ " .$EXT " ]]; then
+        zenity --info --title="Filetype Not Allowed" --text="Given filetype not allowed by Catbox, proceeding to zip and upload."
+        zip "$TEMP_ZIP" "$FILE_PATH"
+        FILE_PATH="$TEMP_ZIP"
+    fi
+
+    # Upload the file
+    if [ -n "$userhash" ]; then
+        RESPONSE=$(curl -s -F "reqtype=fileupload" -F "userhash=$userhash" -F "fileToUpload=@$FILE_PATH" "https://catbox.moe/user/api.php")
+    else
+        RESPONSE=$(curl -s -F "reqtype=fileupload" -F "fileToUpload=@$FILE_PATH" "https://catbox.moe/user/api.php")
+    fi
+
+    if [ -z "$RESPONSE" ]; then
+        zenity --error --title="Error" --text="Failed to upload the file."
+        exit 1
+    fi
+
+    # Display the result and copy to clipboard
+    echo "$RESPONSE" | xclip -selection clipboard
+    zenity --info --title="Upload Complete" --text="File uploaded successfully.\nLink: $RESPONSE\n(Link copied to clipboard)"
+    
+    # Clean up temporary files
+    if [ -f "$TEMP_ZIP" ]; then
+        rm "$TEMP_ZIP"
+    fi
+}
+
+# Main script
+for FILE in "$@"; do
+    upload_file "$FILE"
+done

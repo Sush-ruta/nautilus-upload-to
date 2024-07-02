@@ -1,0 +1,23 @@
+#!/bin/bash
+
+# Function to upload file to transfer_more
+upload_file() {
+    FILE_PATH="$1"
+    FILE_NAME=$(basename "$FILE_PATH")
+    API_URL="https://up.sceptique.eu/$FILE_NAME"
+    
+    RESPONSE=$(curl --progress-bar --upload-file "$FILE_PATH" "$API_URL")
+
+    if [ $? -eq 0 ]; then
+        FILE_URL="$RESPONSE"
+        echo "$FILE_URL" | xclip -selection clipboard
+        zenity --info --title="Upload Complete" --text="File uploaded successfully.\nURL copied to clipboard: $FILE_URL"
+    else
+        zenity --error --title="Error" --text="Failed to upload file."
+    fi
+}
+
+# Main script
+for FILE in "$@"; do
+    upload_file "$FILE"
+done
