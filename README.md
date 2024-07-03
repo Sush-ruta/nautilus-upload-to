@@ -42,14 +42,14 @@ Services
 Note on WIP Scripts
 -------------------
 
-The "put.re" and "Uguu" scripts are currently failing to upload the files correctly. I'm working on resolving any issues, and I'll update the repository as soon as they're operational.
+The `put.re` and `Uguu` scripts are currently failing to upload the files correctly. I'm working on resolving any issues, and I'll update the repository as soon as they're operational.
 
 Feel free to explore the scripts, contribute, and customize them to your liking!
 
 License
 -------
 
-This project is licensed under the [WTFPL (Do What The Fuck You Want To Public License)](https://github.com/Sush-ruta/custom-desktop/blob/main/LICENSE). You can find the full text of the license in the [LICENSE](https://github.com/Sush-ruta/nautilus-upload-to/blob/main/LICENSE) file.
+This project is licensed under the [WTFPL (Do What The Fuck You Want To Public License)](https://github.com/Sush-ruta/custom-desktop/blob/main/LICENSE). You can find the full text of the license in the [LICENSE](LICENSE) file.
 
 Disclaimer
 ----------
