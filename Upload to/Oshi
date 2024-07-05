@@ -1,0 +1,52 @@
+#!/bin/bash
+
+# Function to upload file to Oshi.at
+upload_file() {
+    FILE_PATH="$1"
+    SERVER_URL="https://oshi.at"
+
+    # Read configuration from ~/.config/.oshi_upload.conf if exists
+    CONFIG_FILE="$HOME/.config/.oshi_upload.conf"
+    if [[ -f "$CONFIG_FILE" ]]; then
+        source "$CONFIG_FILE"
+    fi
+
+    # Set default values if not defined in config file
+    expire=${expire:-""}
+    autodestroy=${autodestroy:-""}
+    shorturl=${shorturl:-""}
+    randomizefn=${randomizefn:-""}
+
+    # Build curl command with options
+    curl_cmd="curl -s -F f=@\"${FILE_PATH}\""
+    [[ ! -z "$expire" ]] && curl_cmd+=" -F expire=${expire}"
+    [[ ! -z "$autodestroy" ]] && curl_cmd+=" -F autodestroy=${autodestroy}"
+    [[ ! -z "$shorturl" ]] && curl_cmd+=" -F shorturl=${shorturl}"
+    [[ ! -z "$randomizefn" ]] && curl_cmd+=" -F randomizefn=${randomizefn}"
+    curl_cmd+=" ${SERVER_URL}"
+
+    # Execute curl command and capture response
+    response=$(eval "${curl_cmd}")
+
+    # Check if the upload was successful
+    if [[ $? -ne 0 ]]; then
+        zenity --error --title "File Upload Error" --text "Failed to upload the file."
+        exit 1
+    fi
+
+    # Extract the MANAGE URL from response
+    manage_url=$(echo "$response" | grep -o 'https://oshi.at/a/[^ ]*')
+
+    # Check if MANAGE URL was found
+    if [[ -z "$manage_url" ]]; then
+        zenity --error --title "File Upload Error" --text "Failed to extract the MANAGE URL."
+        exit 1
+    fi
+
+    # Display the result and copy to clipboard
+    echo "$manage_url" | xclip -selection clipboard
+    zenity --info --title "File Upload Success" --text "File uploaded successfully.\n\nLink: $manage_url\n\n(Link copied to clipboard)"
+}
+
+# Call the function with the file from Nautilus context menu
+upload_file "$1"
