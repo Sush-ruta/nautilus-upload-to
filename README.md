@@ -38,6 +38,7 @@ Services
 | [transfer_more](https://up.sceptique.eu/) | Upload files to Sceptique's transfer service. |
 | [Gofile](https://gofile.io/) | Your all-in-one storage, management and distribution solution for your content. |
 | [fluffy](https://fluffy.cc/) | A file-sharing web app that doesn't suck. |
+| [file.io](https://www.file.io/) | Super simple file sharing! |
 | [put.re](https://put.re/) | Work-in-progress: A service for uploading files. Currently not functional (see note below). |
 | [Uguu](https://uguu.se/) | Work-in-progress: Another file-sharing service. Currently not functional (see note below). |
 
