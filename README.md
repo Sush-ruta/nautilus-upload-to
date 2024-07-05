@@ -40,6 +40,8 @@ Services
 | [fluffy](https://fluffy.cc/) | A file-sharing web app that doesn't suck. |
 | [file.io](https://www.file.io/) | Super simple file sharing! |
 | [NixNet Upload](https://up.nixnet.services/) | Self-hosted file/code/media sharing website. |
+| [Oshi](https://oshi.at/) | OshiUpload is a powerful anonymous public file sharing FLOSS. |
+| [Firefox Send](https://send.vis.ee/) | Simple, private file sharing. Requires [ffsend](https://github.com/timvisee/ffsend) to function. |
 | [put.re](https://put.re/) | Work-in-progress: A service for uploading files. Currently not functional (see note below). |
 | [Uguu](https://uguu.se/) | Work-in-progress: Another file-sharing service. Currently not functional (see note below). |
 | [Disroot Upload](https://upload.disroot.org/) | Work-in-progress: Let's Upload that FIle — File sharing software. Currently not functioninal (see note below). |

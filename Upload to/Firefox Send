@@ -1,0 +1,44 @@
+#!/bin/bash
+
+# Function to upload file to Firefox Send using ffsend
+upload_file() {
+    FILE_PATH="$1"
+
+    # Check if ffsend is installed
+    if ! command -v ffsend &> /dev/null; then
+        zenity --error --title "ffsend Not Found" --text "ffsend is not installed on your system. Please download it from https://github.com/timvisee/ffsend"
+        exit 1
+    fi
+
+    # Read configuration from ~/.config/.ffsend_upload.conf if exists
+    CONFIG_FILE="$HOME/.config/.ffsend_upload.conf"
+    if [[ -f "$CONFIG_FILE" ]]; then
+        source "$CONFIG_FILE"
+    fi
+
+    # Set default values if not defined in config file
+    downloads=${downloads:-""}
+    expiry_time=${expiry_time:-""}
+    archive=${archive:-""}
+
+    # Build the ffsend command
+    ffsend_cmd="ffsend upload"
+
+    [[ ! -z "$downloads" ]] && ffsend_cmd+=" --downloads $downloads"
+    [[ ! -z "$expiry_time" ]] && ffsend_cmd+=" --expiry-time $expiry_time"
+    [[ ! -z "$archive" ]] && ffsend_cmd+=" --archive"
+    ffsend_cmd+=" --copy \"$FILE_PATH\""
+
+    # Execute ffsend command
+    upload_output=$(eval "$ffsend_cmd")
+
+    # Extract the link from ffsend output
+    link=$(echo "$upload_output" | awk '{print $NF}')
+
+    # Display the link and copy to clipboard
+    echo "$link" | xclip -selection clipboard
+    zenity --info --title "File Upload Success" --text "File uploaded successfully.\n\nLink: $link\n\n(Link copied to clipboard)"
+}
+
+# Call the function with the file from Nautilus context menu
+upload_file "$1"
