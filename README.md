@@ -39,6 +39,7 @@ Services
 | [Gofile](https://gofile.io/) | Your all-in-one storage, management and distribution solution for your content. |
 | [fluffy](https://fluffy.cc/) | A file-sharing web app that doesn't suck. |
 | [file.io](https://www.file.io/) | Super simple file sharing! |
+| [NixNet Upload](https://up.nixnet.services/) | Self-hosted file/code/media sharing website. |
 | [put.re](https://put.re/) | Work-in-progress: A service for uploading files. Currently not functional (see note below). |
 | [Uguu](https://uguu.se/) | Work-in-progress: Another file-sharing service. Currently not functional (see note below). |
 

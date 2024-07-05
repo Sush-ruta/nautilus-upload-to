@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Function to upload file to Fluffy
+# Function to upload file to fluffy
 upload_file() {
     FILE_PATH="$1"
 
