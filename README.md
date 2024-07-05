@@ -42,6 +42,7 @@ Services
 | [NixNet Upload](https://up.nixnet.services/) | Self-hosted file/code/media sharing website. |
 | [put.re](https://put.re/) | Work-in-progress: A service for uploading files. Currently not functional (see note below). |
 | [Uguu](https://uguu.se/) | Work-in-progress: Another file-sharing service. Currently not functional (see note below). |
+| [Disroot Upload](https://upload.disroot.org/) | Work-in-progress: Let's Upload that FIle — File sharing software. Currently not functioninal (see note below). |
 
 Note on WIP Scripts
 -------------------

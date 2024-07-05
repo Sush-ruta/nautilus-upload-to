@@ -1,0 +1,50 @@
+#!/bin/bash
+
+# Function to upload file to Lufi
+upload_file() {
+    FILE_PATH="$1"
+    SERVER_URL="https://upload.disroot.org"
+    WS_URL="${SERVER_URL//http/ws}/upload"
+
+    # Read configuration from ~/.config/lufi_upload.conf if exists
+    CONFIG_FILE="$HOME/.config/.lufi_upload.conf"
+    if [[ -f "$CONFIG_FILE" ]]; then
+        source "$CONFIG_FILE"
+    fi
+
+    # Prompt for expiry time only if not set in config
+    if [[ -z "$expiry_time" ]]; then
+        expiry=$(zenity --entry --title "Expiry Time" --text "Enter expiry time in days (e.g., 7):")
+        if [[ $? -ne 0 ]]; then
+            exit 0
+        fi
+    else
+        expiry="$expiry_time"
+    fi
+
+    # Check if delete_after_download is set in config, otherwise default to false
+    if [[ -z "$delete_after_download" ]]; then
+        delete_after_download=false
+    fi
+
+    # Upload file using curl
+    response=$(curl -s -F "file=@${FILE_PATH}" -F "expiration=${expiry}" -F "burnafterreading=${delete_after_download}" "${SERVER_URL}/upload")
+
+    # Check if the upload was successful
+    success=$(echo "$response" | jq -r '.success')
+    if [[ "$success" != "true" ]]; then
+        zenity --error --title "File Upload Error" --text "Failed to upload the file.\n$response"
+        exit 1
+    fi
+
+    # Extract the link and other details from response (if available)
+    link=$(echo "$response" | jq -r '.link')
+    deletion_url=$(echo "$response" | jq -r '.deletion_url')
+
+    # Display the result and copy to clipboard
+    echo "$link" | xclip -selection clipboard
+    zenity --info --title "File Upload Success" --text "File uploaded successfully.\n\nLink: $link\nDeletion URL: $deletion_url\nExpire After: ${expiry} days\nBurn After Reading: ${delete_after_download}\n\n(Link copied to clipboard)"
+}
+
+# Call the function with the file from Nautilus context menu
+upload_file "$1"
