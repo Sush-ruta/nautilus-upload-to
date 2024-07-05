@@ -36,6 +36,7 @@ Services
 | [termbin](https://termbin.com/) | Share text snippets via the command line. |
 | [tmpfiles](https://tmpfiles.org/) | Secure temporary file hosting. |
 | [transfer_more](https://up.sceptique.eu/) | Upload files to Sceptique's transfer service. |
+| [Gofile](https://gofile.io/) | Your all-in-one storage, management and distribution solution for your content. |
 | [put.re](https://put.re/) | Work-in-progress: A service for uploading files. Currently not functional (see note below). |
 | [Uguu](https://uguu.se/) | Work-in-progress: Another file-sharing service. Currently not functional (see note below). |
 
