@@ -1,0 +1,40 @@
+#!/bin/bash
+
+# Function to upload image to Freeimage.host
+upload_image() {
+    FILE_PATH="$1"
+    API_URL="https://freeimage.host/api/1/upload"
+
+    # Read API key from ~/.config/.freeimage_upload.conf if exists
+    CONFIG_FILE="$HOME/.config/.freeimage_upload.conf"
+    if [[ -f "$CONFIG_FILE" ]]; then
+        source "$CONFIG_FILE"
+    fi
+
+    # Prompt for API key if not set
+    if [[ -z "$API_KEY" ]]; then
+        API_KEY=$(zenity --entry --title "API Key Required" --text "Enter your Freeimage.host API key:")
+        if [[ $? -ne 0 || -z "$API_KEY" ]]; then
+            zenity --error --title "API Key Required" --text "API key is required to upload the image."
+            exit 1
+        fi
+        # Save API key to config file
+        echo "API_KEY=\"$API_KEY\"" > "$CONFIG_FILE"
+    fi
+
+    # Upload image using curl
+    response=$(curl -s -X POST "$API_URL" -F "key=$API_KEY" -F "action=upload" -F "source=@$FILE_PATH" -F "format=txt")
+
+    # Check if the upload was successful
+    if [[ $? -ne 0 || -z "$response" || $response == *"error"* ]]; then
+        zenity --error --title "Image Upload Error" --text "Failed to upload the image.\n$response"
+        exit 1
+    fi
+
+    # Display the result and copy to clipboard
+    echo "$response" | xclip -selection clipboard
+    zenity --info --title "Image Upload Success" --text "Image uploaded successfully.\n\nLink: $response\n\n(Link copied to clipboard)"
+}
+
+# Call the function with the file from Nautilus context menu
+upload_image "$1"
