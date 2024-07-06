@@ -8,7 +8,7 @@ upload_file() {
     DEFAULT_EXPIRY=0
 
     # Config file path
-    CONFIG_FILE="$HOME/.nixnet_upload.conf"
+    CONFIG_FILE="$HOME/.config/.nixnet_upload.conf"
 
     # Read expiry time from the config file if it exists
     if [[ -f "$CONFIG_FILE" ]]; then
