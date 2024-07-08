@@ -1,0 +1,59 @@
+#!/bin/bash
+
+# Function to upload file to vgy.me
+upload_file() {
+    FILE_PATH="$1"
+    CONFIG_FILE="$HOME/.config/.vgyme_uploader.conf"
+    MAX_SIZE=$((20 * 1024 * 1024)) # 20 MB in bytes
+    ALLOWED_EXTENSIONS=("jpg" "jpeg" "png" "gif")
+
+    # Check file size
+    FILE_SIZE=$(stat -c%s "$FILE_PATH")
+    if [ "$FILE_SIZE" -gt "$MAX_SIZE" ]; then
+        zenity --error --title="Error" --text="File size exceeds 20 MB."
+        exit 1
+    fi
+
+    # Check file extension
+    FILE_EXTENSION="${FILE_PATH##*.}"
+    FILE_EXTENSION="${FILE_EXTENSION,,}" # Convert to lowercase
+    if [[ ! " ${ALLOWED_EXTENSIONS[@]} " =~ " ${FILE_EXTENSION} " ]]; then
+        zenity --error --title="Error" --text="Invalid file extension. Only jpg, jpeg, png, and gif are allowed."
+        exit 1
+    fi
+
+    # Check for user key in config file
+    if [ ! -f "$CONFIG_FILE" ]; then
+        USER_KEY=$(zenity --entry --title="Enter vgy.me User Key" --text="Please enter your vgy.me user key:")
+        echo "userkey=$USER_KEY" > "$CONFIG_FILE"
+    else
+        source "$CONFIG_FILE"
+    fi
+
+    if [ -z "$userkey" ]; then
+        USER_KEY=$(zenity --entry --title="Enter vgy.me User Key" --text="Please enter your vgy.me user key:")
+        echo "userkey=$USER_KEY" > "$CONFIG_FILE"
+    else
+        USER_KEY="$userkey"
+    fi
+
+    # Upload the file
+    RESPONSE=$(curl -s -F "file=@${FILE_PATH}" -F "userkey=${USER_KEY}" https://vgy.me/upload)
+
+    # Extract the URL from the response
+    UPLOAD_LINK=$(echo "$RESPONSE" | grep -Po '(?<="image":")[^"]*' | sed 's/\\//g')
+
+    if [ -z "$UPLOAD_LINK" ]; then
+        zenity --error --title="Error" --text="Failed to upload the file. Please check your user key and try again."
+        exit 1
+    fi
+
+    # Display the result and copy to clipboard
+    echo "$UPLOAD_LINK" | xclip -selection clipboard
+    zenity --info --title="Upload Complete" --text="File uploaded successfully.\nLink: $UPLOAD_LINK\n(Link copied to clipboard)"
+}
+
+# Main script
+for FILE in "$@"; do
+    upload_file "$FILE"
+done
