@@ -1,0 +1,40 @@
+#!/bin/bash
+
+LOG_FILE="$HOME/.pastor_uploads.log"
+MAX_FILE_SIZE=$((512 * 1024 * 1024)) # 512 MiB
+
+# Function to upload file to Pastor
+upload_file() {
+    FILE_PATH="$1"
+
+    # Check file size
+    FILE_SIZE=$(stat -c%s "$FILE_PATH")
+    if (( FILE_SIZE > MAX_FILE_SIZE )); then
+        zenity --error --title="Error" --text="File exceeds the maximum allowed size of 512 MiB."
+        exit 1
+    fi
+
+    # Upload the file
+    RESPONSE=$(curl -s -F "a=@${FILE_PATH}" https://c-v.sh/)
+
+    # Extract URL and token from response
+    UPLOAD_URL=$(echo "$RESPONSE" | awk '{print $1}')
+    DELETE_TOKEN=$(echo "$RESPONSE" | awk '{print $2}')
+
+    if [[ "$UPLOAD_URL" == http* ]]; then
+        # Display the result and copy to clipboard
+        echo "$UPLOAD_URL" | xclip -selection clipboard
+        zenity --info --title="Upload Complete" --text="File uploaded successfully.\nLink: $UPLOAD_URL\n(Link copied to clipboard)"
+
+        # Log the upload details
+        echo "$(date '+%Y-%m-%d %H:%M:%S') : $(basename "$FILE_PATH") : $DELETE_TOKEN" >> "$LOG_FILE"
+    else
+        zenity --error --title="Error" --text="Failed to upload the file."
+        exit 1
+    fi
+}
+
+# Main script
+for FILE in "$@"; do
+    upload_file "$FILE"
+done
