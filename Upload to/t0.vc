@@ -1,0 +1,61 @@
+#!/bin/bash
+
+# Function to check file mimetype
+check_mimetype() {
+    FILE_PATH="$1"
+    mimetype=$(file -b --mime-type "$FILE_PATH")
+    echo "$mimetype"
+}
+
+# Function to upload text file
+upload_text_file() {
+    FILE_PATH="$1"
+
+    # Upload the file
+    RESPONSE=$(cat "$FILE_PATH" | curl -s -F 'txt=<-' https://txt.t0.vc)
+
+    # Check if upload was successful and extract URL
+    if [[ "$RESPONSE" =~ ^https://txt.t0.vc/.* ]]; then
+        # Display the result and copy to clipboard
+        echo "$RESPONSE" | xclip -selection clipboard
+        zenity --info --title="Upload Complete" --text="File uploaded successfully.\nLink: $RESPONSE\n(Link copied to clipboard)"
+    else
+        zenity --error --title="Error" --text="Failed to upload the file."
+        exit 1
+    fi
+}
+
+# Function to upload image file
+upload_image_file() {
+    FILE_PATH="$1"
+
+    # Upload the file
+    RESPONSE=$(cat "$FILE_PATH" | curl -s -F "pic=@/dev/stdin" https://pic.t0.vc)
+
+    # Check if upload was successful and extract URL
+    if [[ "$RESPONSE" =~ ^https://pic.t0.vc/.* ]]; then
+        # Display the result and copy to clipboard
+        echo "$RESPONSE" | xclip -selection clipboard
+        zenity --info --title="Upload Complete" --text="File uploaded successfully.\nLink: $RESPONSE\n(Link copied to clipboard)"
+    else
+        zenity --error --title="Error" --text="Failed to upload the file."
+        exit 1
+    fi
+}
+
+# Main script
+for FILE in "$@"; do
+    mimetype=$(check_mimetype "$FILE")
+    case "$mimetype" in
+        text/*)
+            upload_text_file "$FILE"
+            ;;
+        image/*)
+            upload_image_file "$FILE"
+            ;;
+        *)
+            zenity --error --title="Error" --text="Unsupported file type: $mimetype.\nOnly text and image files are supported."
+            exit 1
+            ;;
+    esac
+done

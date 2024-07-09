@@ -51,6 +51,7 @@ Services
 | [pastor](https://c-v.sh/) | The pastebin that hopefully doesn't suck. |
 | [curl.by](https://curl.by/) | Upload files from the command line to easily share them between servers, PCs and mobile phones. |
 | [x0.at](https://x0.at/) | Minimalistic file host. |
+| [t0.vc](https://t0.vc/) | Command line pastebin / image host. |
 | [put.re](https://put.re/) | Work-in-progress: A service for uploading files. Currently not functional (see note below). |
 | [Uguu](https://uguu.se/) | Work-in-progress: Another file-sharing service. Currently not functional (see note below). |
 | [Disroot Upload](https://upload.disroot.org/) | Work-in-progress: Let's Upload that FIle — File sharing software. Currently not functioninal (see note below). |
