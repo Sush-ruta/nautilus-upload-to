@@ -53,6 +53,7 @@ Services
 | [x0.at](https://x0.at/) | Minimalistic file host. |
 | [t0.vc](https://t0.vc/) | Command line pastebin / image host. |
 | [CCU.to](https://ccu.to/) | Ad-free, temporary and direct link file upload service. |
+| [ki.tc](https://ki.tc/otf) | One Time File Sharing. |
 | [put.re](https://put.re/) | Work-in-progress: A service for uploading files. Currently not functional (see note below). |
 | [Uguu](https://uguu.se/) | Work-in-progress: Another file-sharing service. Currently not functional (see note below). |
 | [Disroot Upload](https://upload.disroot.org/) | Work-in-progress: Let's Upload that FIle — File sharing software. Currently not functioninal (see note below). |
