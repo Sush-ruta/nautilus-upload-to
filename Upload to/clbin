@@ -1,0 +1,31 @@
+#!/bin/bash
+
+# Function to upload file to clbin.com
+upload_file() {
+    FILE_PATH="$1"
+
+    # Check MIME type
+    MIME_TYPE=$(file --mime-type -b "$FILE_PATH")
+    if [[ ! "$MIME_TYPE" =~ ^text/ ]]; then
+        zenity --error --title="Invalid File Type" --text="The selected file is not a text file. Only text files are allowed."
+        exit 1
+    fi
+
+    # Upload the file
+    RESPONSE=$(cat "$FILE_PATH" | curl -sfF "clbin=<-" https://clbin.com)
+
+    # Check if the upload was successful
+    if [[ "$RESPONSE" == http* ]]; then
+        # Display the result and copy to clipboard
+        echo "$RESPONSE" | xclip -selection clipboard
+        zenity --info --title="Upload Complete" --text="File uploaded successfully.\nLink: $RESPONSE\n(Link copied to clipboard)"
+    else
+        zenity --error --title="Error" --text="Failed to upload the file."
+        exit 1
+    fi
+}
+
+# Main script
+for FILE in "$@"; do
+    upload_file "$FILE"
+done

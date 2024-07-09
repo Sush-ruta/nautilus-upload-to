@@ -44,6 +44,9 @@ Services
 | [Firefox Send](https://send.vis.ee/) | Simple, private file sharing. Requires [ffsend](https://github.com/timvisee/ffsend) to function. |
 | [Freeimage.host](https://freeimage.host/) | Upload and share your images. |
 | [vgy.me](https://vgy.me/) | vgy.me is a free and easy to use image hosting service for everyone. |
+| [pb1n.de](http://pb1n.de/) | Pastebin service for sharing code, notes and snippets. |
+| [clbin](https://clbin.com/) | Command line pastebin. |
+| [paste.rs](https://paste.rs/) | A simple pastebin. |
 | [put.re](https://put.re/) | Work-in-progress: A service for uploading files. Currently not functional (see note below). |
 | [Uguu](https://uguu.se/) | Work-in-progress: Another file-sharing service. Currently not functional (see note below). |
 | [Disroot Upload](https://upload.disroot.org/) | Work-in-progress: Let's Upload that FIle — File sharing software. Currently not functioninal (see note below). |
