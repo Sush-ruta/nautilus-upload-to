@@ -1,0 +1,84 @@
+#!/bin/bash
+
+CONFIG_FILE="$HOME/.config/krakenfiles.conf"
+LOG_FILE="$HOME/.krakenfiles_uploads.log"
+MAX_FILE_SIZE=$((2 * 1024 * 1024 * 1024))  # 2GB in bytes
+
+API_KEY=""
+
+# Function to get the API key
+get_api_key() {
+    if [ -f "$CONFIG_FILE" ]; then
+        source "$CONFIG_FILE"
+    fi
+
+    if [ -z "$API_KEY" ]; then
+        API_KEY=$(zenity --entry --title="KrakenFiles API Key" --text="Enter your KrakenFiles API key:")
+        if [ -z "$API_KEY" ]; then
+            zenity --error --title="Error" --text="API key is required to upload files."
+            exit 1
+        fi
+        echo "API_KEY=\"$API_KEY\"" > "$CONFIG_FILE"
+    fi
+}
+
+# Function to get the available server
+get_available_server() {
+    RESPONSE=$(curl -s -H "Accept: application/json" https://krakenfiles.com/api/server/available)
+    SERVER_URL=$(echo "$RESPONSE" | jq -r '.data.url')
+    SERVER_ACCESS_TOKEN=$(echo "$RESPONSE" | jq -r '.data.serverAccessToken')
+
+    if [ -z "$SERVER_URL" ] || [ -z "$SERVER_ACCESS_TOKEN" ]; then
+        zenity --error --title="Error" --text="Failed to get an available server. Please try again later."
+        exit 1
+    fi
+}
+
+# Function to upload file to KrakenFiles
+upload_file() {
+    FILE_PATH="$1"
+
+    # Check if the file exists
+    if [ ! -f "$FILE_PATH" ]; then
+        zenity --error --title="Error" --text="File not found: $FILE_PATH"
+        exit 1
+    fi
+
+    # Check if the file size is within the limit
+    FILE_SIZE=$(stat -c%s "$FILE_PATH")
+    if [ "$FILE_SIZE" -gt "$MAX_FILE_SIZE" ]; then
+        zenity --error --title="Error" --text="File size exceeds the 2GB limit."
+        exit 1
+    fi
+
+    # Get the available server
+    get_available_server
+
+    # Upload the file
+    RESPONSE=$(curl -s -X POST "$SERVER_URL" \
+        -H "X-AUTH-TOKEN: $API_KEY" \
+        -F "serverAccessToken=$SERVER_ACCESS_TOKEN" \
+        -F "file=@$FILE_PATH")
+
+    # Check if the upload was successful
+    UPLOAD_URL=$(echo "$RESPONSE" | jq -r '.data.url')
+    FILE_HASH=$(echo "$RESPONSE" | jq -r '.data.hash')
+
+    if [[ "$UPLOAD_URL" == http* ]]; then
+        # Display the result and copy to clipboard
+        echo "$UPLOAD_URL" | xclip -selection clipboard
+        zenity --info --title="Upload Complete" --text="File uploaded successfully.\nLink: $UPLOAD_URL\n(Link copied to clipboard)"
+
+        # Log the upload details
+        echo "$(date '+%Y-%m-%d %H:%M:%S') : $(basename "$FILE_PATH") : $FILE_HASH" >> "$LOG_FILE"
+    else
+        zenity --error --title="Error" --text="Failed to upload the file."
+        exit 1
+    fi
+}
+
+# Main script
+get_api_key
+for FILE in "$@"; do
+    upload_file "$FILE"
+done
