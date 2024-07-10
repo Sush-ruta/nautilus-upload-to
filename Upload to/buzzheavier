@@ -1,0 +1,45 @@
+#!/bin/bash
+
+CONFIG_FILE="$HOME/.config/buzzheavier.conf"
+
+# Create the config file if it doesn't exist
+if [ ! -f "$CONFIG_FILE" ]; then
+    echo "# Add your API key below" > "$CONFIG_FILE"
+    echo "API_KEY=" >> "$CONFIG_FILE"
+fi
+
+# Function to get the API key from the config file
+get_api_key() {
+    API_KEY=$(grep "API_KEY=" "$CONFIG_FILE" | cut -d'=' -f2)
+    echo "$API_KEY"
+}
+
+# Function to upload file to BuzzHeavier
+upload_file() {
+    FILE_PATH="$1"
+    API_KEY=$(get_api_key)
+    
+    if [ -z "$API_KEY" ]; then
+        RESPONSE=$(curl -#o - -T "$FILE_PATH" "https://w.buzzheavier.com/t/$(basename "$FILE_PATH")" | cat)
+    else
+        RESPONSE=$(curl -#o - -H "Authorization: Bearer $API_KEY" -T "$FILE_PATH" "https://w.buzzheavier.com/$(basename "$FILE_PATH")" | cat)
+    fi
+
+    # Extract the ID from the JSON response
+    FILE_ID=$(echo "$RESPONSE" | grep -oP '(?<="id":")[^"]*')
+    
+    if [ -n "$FILE_ID" ]; then
+        UPLOAD_LINK="https://buzzheavier.com/f/$FILE_ID"
+        
+        # Display the upload link and copy to clipboard
+        echo "$UPLOAD_LINK" | xclip -selection clipboard
+        zenity --info --title="Upload Complete" --text="File uploaded successfully.\nLink: $UPLOAD_LINK\n(Link copied to clipboard)"
+    else
+        zenity --error --title="Error" --text="Failed to upload the file."
+    fi
+}
+
+# Main script
+for FILE in "$@"; do
+    upload_file "$FILE"
+done

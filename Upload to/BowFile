@@ -1,0 +1,99 @@
+#!/bin/bash
+
+CONFIG_FILE="$HOME/.config/.bowfile.conf"
+LOG_FILE="$HOME/.bowfile_uploads.log"
+API_AUTHORIZE_URL="https://bowfile.com/api/v2/authorize"
+API_UPLOAD_URL="https://bowfile.com/api/v2/file/upload"
+
+# Create the hidden config file if it doesn't exist
+if [ ! -f "$CONFIG_FILE" ]; then
+    touch "$CONFIG_FILE"
+    echo "# Add your API keys below" > "$CONFIG_FILE"
+    echo "KEY1=" >> "$CONFIG_FILE"
+    echo "KEY2=" >> "$CONFIG_FILE"
+fi
+
+# Function to get API keys from the config file
+get_api_keys() {
+    KEY1=$(grep "KEY1=" "$CONFIG_FILE" | cut -d'=' -f2)
+    KEY2=$(grep "KEY2=" "$CONFIG_FILE" | cut -d'=' -f2)
+    echo "$KEY1" "$KEY2"
+}
+
+# Function to prompt for API keys and save them
+prompt_and_save_api_keys() {
+    KEY1=$(zenity --entry --title="Enter API Key 1" --text="Please enter your API Key 1:")
+    KEY2=$(zenity --entry --title="Enter API Key 2" --text="Please enter your API Key 2:")
+
+    if [ -n "$KEY1" ] && [ -n "$KEY2" ]; then
+        echo "KEY1=$KEY1" > "$CONFIG_FILE"
+        echo "KEY2=$KEY2" >> "$CONFIG_FILE"
+    else
+        zenity --error --title="Error" --text="API keys cannot be empty. Please try again."
+        exit 1
+    fi
+}
+
+# Function to authorize and get access token and account id
+authorize() {
+    KEY1=$1
+    KEY2=$2
+
+    RESPONSE=$(curl -s -X POST "$API_AUTHORIZE_URL" \
+        -F "key1=$KEY1" \
+        -F "key2=$KEY2")
+
+    ACCESS_TOKEN=$(echo "$RESPONSE" | jq -r '.data.access_token')
+    ACCOUNT_ID=$(echo "$RESPONSE" | jq -r '.data.account_id')
+
+    if [ -z "$ACCESS_TOKEN" ] || [ -z "$ACCOUNT_ID" ]; then
+        zenity --error --title="Authorization Error" --text="Failed to authorize. Please check your API keys."
+        exit 1
+    fi
+
+    echo "$ACCESS_TOKEN" "$ACCOUNT_ID"
+}
+
+# Function to upload file to BowFile
+upload_file() {
+    FILE_PATH="$1"
+    ACCESS_TOKEN=$2
+    ACCOUNT_ID=$3
+
+    RESPONSE=$(curl -s -X POST "$API_UPLOAD_URL" \
+        -F "access_token=$ACCESS_TOKEN" \
+        -F "account_id=$ACCOUNT_ID" \
+        -F "upload_file=@${FILE_PATH}")
+
+    URL=$(echo "$RESPONSE" | jq -r '.data[0].url')
+    DELETE_URL=$(echo "$RESPONSE" | jq -r '.data[0].delete_url')
+
+    if [ -z "$URL" ]; then
+        zenity --error --title="Upload Error" --text="Failed to upload the file."
+        exit 1
+    fi
+
+    # Display the result and copy to clipboard
+    echo "$URL" | xclip -selection clipboard
+    zenity --info --title="Upload Complete" --text="File uploaded successfully.\nLink: $URL\n(Link copied to clipboard)"
+
+    # Log the upload details
+    echo "$(date '+%Y-%m-%d %H:%M:%S') : $(basename "$FILE_PATH") : $DELETE_URL" >> "$LOG_FILE"
+}
+
+# Main script
+KEYS=($(get_api_keys))
+if [ -z "${KEYS[0]}" ] || [ -z "${KEYS[1]}" ]; then
+    zenity --info --title="API Keys Needed" --text="API keys are not set. Please enter your API keys."
+    prompt_and_save_api_keys
+    KEYS=($(get_api_keys))
+fi
+
+AUTH_DETAILS=($(authorize "${KEYS[0]}" "${KEYS[1]}"))
+for FILE in "$@"; do
+    if [ $(stat -c%s "$FILE") -gt $((5 * 1024 * 1024 * 1024)) ]; then
+        zenity --error --title="File Size Error" --text="The file size exceeds the 5GB limit."
+    else
+        upload_file "$FILE" "${AUTH_DETAILS[0]}" "${AUTH_DETAILS[1]}"
+    fi
+done

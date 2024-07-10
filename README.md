@@ -25,43 +25,29 @@ chmod +x "$HOME/.local/share/nautilus/scripts/"*
 Services
 --------
 
-| Service | Description |
-| --- | --- |
-| [0x0](https://0x0.st/) | Anonymous file hosting with a simple web interface. |
-| [bashupload](https://bashupload.com/) | Upload files via a straightforward command-line interface. |
-| [Catbox](https://catbox.moe/) | Image and file hosting with a focus on privacy. |
-| [File Doge](https://filedoge.com/) | Easy file sharing with a cute doge mascot. |
-| [Litterbox](https://litterbox.catbox.moe/) | Another Catbox-based service for file uploads. |
-| [Temp.sh](https://temp.sh/) | Temporary file hosting with automatic deletion after a specified time. |
-| [termbin](https://termbin.com/) | Share text snippets via the command line. |
-| [tmpfiles](https://tmpfiles.org/) | Secure temporary file hosting. |
-| [transfer_more](https://up.sceptique.eu/) | Upload files to Sceptique's transfer service. |
-| [Gofile](https://gofile.io/) | Your all-in-one storage, management and distribution solution for your content. |
-| [fluffy](https://fluffy.cc/) | A file-sharing web app that doesn't suck. |
-| [file.io](https://www.file.io/) | Super simple file sharing! |
-| [NixNet Upload](https://up.nixnet.services/) | Self-hosted file/code/media sharing website. |
-| [Oshi](https://oshi.at/) | OshiUpload is a powerful anonymous public file sharing FLOSS. |
-| [Firefox Send](https://send.vis.ee/) | Simple, private file sharing. Requires [ffsend](https://github.com/timvisee/ffsend) to function. |
-| [Freeimage.host](https://freeimage.host/) | Upload and share your images. |
-| [vgy.me](https://vgy.me/) | vgy.me is a free and easy to use image hosting service for everyone. |
-| [pb1n.de](http://pb1n.de/) | Pastebin service for sharing code, notes and snippets. |
-| [clbin](https://clbin.com/) | Command line pastebin. |
-| [paste.rs](https://paste.rs/) | A simple pastebin. |
-| [KrakenFiles](https://krakenfiles.com/) | Unlimited disk space for storing and sharing files securely. |
-| [pastor](https://c-v.sh/) | The pastebin that hopefully doesn't suck. |
-| [curl.by](https://curl.by/) | Upload files from the command line to easily share them between servers, PCs and mobile phones. |
-| [x0.at](https://x0.at/) | Minimalistic file host. |
-| [t0.vc](https://t0.vc/) | Command line pastebin / image host. |
-| [CCU.to](https://ccu.to/) | Ad-free, temporary and direct link file upload service. |
-| [ki.tc](https://ki.tc/otf) | One Time File Sharing. |
-| [put.re](https://put.re/) | Work-in-progress: A service for uploading files. Currently not functional (see note below). |
-| [Uguu](https://uguu.se/) | Work-in-progress: Another file-sharing service. Currently not functional (see note below). |
-| [Disroot Upload](https://upload.disroot.org/) | Work-in-progress: Let's Upload that FIle — File sharing software. Currently not functioninal (see note below). |
+### File Sharing Services
+| [0x0](https://0x0.st/)             | [bashupload](https://bashupload.com/)      | [Catbox](https://catbox.moe/)                |
+| [File Doge](https://filedoge.com/) | [Litterbox](https://litterbox.catbox.moe/) | [Temp.sh](http://Temp.sh)                    |
+| [tmpfiles](https://tmpfiles.org/)  | [transfer_more](https://up.sceptique.eu/)  | [Gofile](https://gofile.io/)                 |
+| [fluffy](https://fluffy.cc/)       | [file.io](http://file.io)                  | [NixNet Upload](https://up.nixnet.services/) |
+| [Oshi](https://oshi.at/)           | [Firefox Send](https://send.vis.ee/)       | [KrakenFiles](https://krakenfiles.com/)      |
+| [pastor](https://c-v.sh/)          | [curl.by](http://curl.by)                  | [x0.at](http://x0.at)                        |
+| [t0.vc](http://t0.vc)              | [CCU.to](http://CCU.to)                    | [ki.tc](http://ki.tc)                        |
+| [BowFile](https://bowfile.com/)    | [buzzheavier](https://buzzheavier.com/)    |                                              |
+### Pastebin Services
+| [termbin](https://termbin.com/) | [pb1n.de](http://pb1n.de) | [clbin](https://clbin.com/) |
+| [paste.rs](http://paste.rs)     |                           |                             |
+
+### Image Hosting Services
+| [Freeimage.host](http://Freeimage.host) | [vgy.me](http://vgy.me) |  |
+
+### Work-in-progress
+| [put.re](http://put.re) | [Uguu](https://uguu.se/) | [Disroot Upload](https://upload.disroot.org/) |
 
 Note on WIP Scripts
 -------------------
 
-The `put.re` and `Uguu` scripts are currently failing to upload the files correctly. I'm working on resolving any issues, and I'll update the repository as soon as they're operational.
+Some scripts are currently failing to upload the files correctly. I'm working on resolving any issues, and I'll update the repository as soon as they're operational.
 
 Feel free to explore the scripts, contribute, and customize them to your liking!
 
