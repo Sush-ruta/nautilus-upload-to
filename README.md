@@ -48,9 +48,10 @@ Services
 | [Freeimage.host](http://Freeimage.host) | [vgy.me](http://vgy.me) |     |
 
 ### Work-in-progress
-|                         | Work-in-progress         |                                               |
-| ----------------------- | ------------------------ | --------------------------------------------- |
-| [put.re](http://put.re) | [Uguu](https://uguu.se/) | [Disroot Upload](https://upload.disroot.org/) |
+|                               | Work-in-progress         |                                               |
+| ----------------------------- | ------------------------ | --------------------------------------------- |
+| [put.re](http://put.re)       | [Uguu](https://uguu.se/) | [Disroot Upload](https://upload.disroot.org/) |
+| [Ufile.io](https://ufile.io/) |                          |                                               |
 
 Note on WIP Scripts
 -------------------
