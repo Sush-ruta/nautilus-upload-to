@@ -1,0 +1,55 @@
+#!/bin/bash
+
+# Define constants
+CONF_DIR="$HOME/.config"
+CONF_FILE="$CONF_DIR/fileditch.conf"
+MAX_FILE_SIZE=$((5 * 1024 * 1024 * 1024)) # 5 GB
+
+# Create config directory and file if they do not exist
+mkdir -p "$CONF_DIR"
+if [ ! -f "$CONF_FILE" ]; then
+  cat <<EOL > "$CONF_FILE"
+# FileDitch Configuration
+# Set upload_temporary to "yes" to upload to the temporary 72h service.
+# Set upload_temporary to "no" or leave unset to use the regular service.
+
+
+upload_temporary=
+EOL
+fi
+
+# Source the config file
+source "$CONF_FILE"
+
+# Get the file path
+FILE_PATH="$1"
+
+# Check file size
+FILE_SIZE=$(stat -c%s "$FILE_PATH")
+if (( FILE_SIZE > MAX_FILE_SIZE )); then
+  zenity --error --text="File size exceeds the maximum limit of 5 GB."
+  exit 1
+fi
+
+# Determine the upload URL based on the config setting
+if [ "$upload_temporary" == "yes" ]; then
+  UPLOAD_URL="https://up1.fileditch.com/temp/upload.php"
+else
+  UPLOAD_URL="https://up1.fileditch.com/upload.php"
+fi
+
+# Upload the file
+RESPONSE=$(curl -s -F "files[]=@$FILE_PATH" "$UPLOAD_URL")
+
+# Extract the download URL from the JSON response
+DOWNLOAD_URL=$(echo "$RESPONSE" | grep -Po '"url": *\K"[^"]*"' | tr -d '"')
+
+# Check if the upload was successful
+if [ -z "$DOWNLOAD_URL" ]; then
+  zenity --error --text="Upload failed. Please try again."
+  exit 1
+fi
+
+# Show the download URL and copy it to the clipboard
+echo "$DOWNLOAD_URL" | xclip -selection clipboard
+zenity --info --text="File uploaded successfully.\nDownload URL: $DOWNLOAD_URL\n\nThe URL has been copied to the clipboard."

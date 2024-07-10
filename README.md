@@ -26,16 +26,17 @@ Services
 --------
 
 ### File Sharing Services
-|                                    | File Sharing Services                      |                                              |
-| ---------------------------------- | ------------------------------------------ | -------------------------------------------- |
-| [0x0](https://0x0.st/)             | [bashupload](https://bashupload.com/)      | [Catbox](https://catbox.moe/)                |
-| [File Doge](https://filedoge.com/) | [Litterbox](https://litterbox.catbox.moe/) | [Temp.sh](http://Temp.sh)                    |
-| [tmpfiles](https://tmpfiles.org/)  | [transfer_more](https://up.sceptique.eu/)  | [Gofile](https://gofile.io/)                 |
-| [fluffy](https://fluffy.cc/)       | [file.io](http://file.io)                  | [NixNet Upload](https://up.nixnet.services/) |
-| [Oshi](https://oshi.at/)           | [Firefox Send](https://send.vis.ee/)       | [KrakenFiles](https://krakenfiles.com/)      |
-| [pastor](https://c-v.sh/)          | [curl.by](http://curl.by)                  | [x0.at](http://x0.at)                        |
-| [t0.vc](http://t0.vc)              | [CCU.to](http://CCU.to)                    | [ki.tc](http://ki.tc)                        |
-| [BowFile](https://bowfile.com/)    | [buzzheavier](https://buzzheavier.com/)    | [Tempfiles](https://tempfiles.ninja/)        |
+|                                     | File Sharing Services                      |                                              |
+| ----------------------------------- | ------------------------------------------ | -------------------------------------------- |
+| [0x0](https://0x0.st/)              | [bashupload](https://bashupload.com/)      | [Catbox](https://catbox.moe/)                |
+| [File Doge](https://filedoge.com/)  | [Litterbox](https://litterbox.catbox.moe/) | [Temp.sh](http://Temp.sh)                    |
+| [tmpfiles](https://tmpfiles.org/)   | [transfer_more](https://up.sceptique.eu/)  | [Gofile](https://gofile.io/)                 |
+| [fluffy](https://fluffy.cc/)        | [file.io](http://file.io)                  | [NixNet Upload](https://up.nixnet.services/) |
+| [Oshi](https://oshi.at/)            | [Firefox Send](https://send.vis.ee/)       | [KrakenFiles](https://krakenfiles.com/)      |
+| [pastor](https://c-v.sh/)           | [curl.by](http://curl.by)                  | [x0.at](http://x0.at)                        |
+| [t0.vc](http://t0.vc)               | [CCU.to](http://CCU.to)                    | [ki.tc](http://ki.tc)                        |
+| [BowFile](https://bowfile.com/)     | [buzzheavier](https://buzzheavier.com/)    | [Tempfiles](https://tempfiles.ninja/)        |
+| [FileDitch](https://fileditch.com/) | [pixeldrain](https://pixeldrain.com/)      |                                              |
 
 ### Pastebin Services
 |                                 | Pastebin Services         |                             |
