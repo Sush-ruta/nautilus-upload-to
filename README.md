@@ -26,6 +26,8 @@ Services
 --------
 
 ### File Sharing Services
+|                                    | File Sharing Services                      |                                              |
+| ---------------------------------- | ------------------------------------------ | -------------------------------------------- |
 | [0x0](https://0x0.st/)             | [bashupload](https://bashupload.com/)      | [Catbox](https://catbox.moe/)                |
 | [File Doge](https://filedoge.com/) | [Litterbox](https://litterbox.catbox.moe/) | [Temp.sh](http://Temp.sh)                    |
 | [tmpfiles](https://tmpfiles.org/)  | [transfer_more](https://up.sceptique.eu/)  | [Gofile](https://gofile.io/)                 |
@@ -35,13 +37,19 @@ Services
 | [t0.vc](http://t0.vc)              | [CCU.to](http://CCU.to)                    | [ki.tc](http://ki.tc)                        |
 | [BowFile](https://bowfile.com/)    | [buzzheavier](https://buzzheavier.com/)    |                                              |
 ### Pastebin Services
+|                                 | Pastebin Services         |                             |
+| ------------------------------- | ------------------------- | --------------------------- |
 | [termbin](https://termbin.com/) | [pb1n.de](http://pb1n.de) | [clbin](https://clbin.com/) |
 | [paste.rs](http://paste.rs)     |                           |                             |
 
 ### Image Hosting Services
-| [Freeimage.host](http://Freeimage.host) | [vgy.me](http://vgy.me) |  |
+|                                         | Image Hosting Services  |     |
+| --------------------------------------- | ----------------------- | --- |
+| [Freeimage.host](http://Freeimage.host) | [vgy.me](http://vgy.me) |     |
 
 ### Work-in-progress
+|                         | Work-in-progress         |                                               |
+| ----------------------- | ------------------------ | --------------------------------------------- |
 | [put.re](http://put.re) | [Uguu](https://uguu.se/) | [Disroot Upload](https://upload.disroot.org/) |
 
 Note on WIP Scripts
