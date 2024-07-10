@@ -1,0 +1,60 @@
+#!/bin/bash
+
+# Define constants
+CONF_DIR="$HOME/.config"
+CONF_FILE="$CONF_DIR/tempfiles_ninja.conf"
+LOG_FILE="$HOME/.tempfiles_ninja_uploads.log"
+MAX_FILE_SIZE=$((100 * 1024 * 1024)) # 100 MiB
+
+# Create config directory and file if they do not exist
+mkdir -p "$CONF_DIR"
+touch "$CONF_FILE"
+source "$CONF_FILE"
+
+# Get the file path
+FILE_PATH="$1"
+
+# Check file size
+FILE_SIZE=$(stat -c%s "$FILE_PATH")
+if (( FILE_SIZE > MAX_FILE_SIZE )); then
+  zenity --error --text="File size exceeds the maximum limit of 100 MiB."
+  exit 1
+fi
+
+# Check if maxviews is set in the config file
+if [ -z "$maxviews" ]; then
+  RESPONSE=$(curl -s -X POST "https://tempfiles.ninja/api/upload" \
+    -F "filename=@${FILE_PATH}" \
+    -H "Content-Type: application/octet-stream")
+else
+  RESPONSE=$(curl -s -X POST "https://tempfiles.ninja/api/upload" \
+    -F "filename=@${FILE_PATH}" \
+    -H "Content-Type: application/octet-stream" \
+    -F "maxviews=${maxviews}")
+fi
+
+# Extract the necessary fields from the response
+STATUS=$(echo "$RESPONSE" | jq -r '.status')
+ID=$(echo "$RESPONSE" | jq -r '.id')
+PASSWORD=$(echo "$RESPONSE" | jq -r '.password')
+DELETE_PASSWORD=$(echo "$RESPONSE" | jq -r '.delete_password')
+DOWNLOAD_URL=$(echo "$RESPONSE" | jq -r '.download_url')
+
+# Check if the upload was successful
+if [ "$STATUS" != "201" ]; then
+  zenity --error --text="Upload failed. Please try again."
+  exit 1
+fi
+
+# Save the details in the log file
+echo "Date: $(date)" >> "$LOG_FILE"
+echo "Filename: $(basename "$FILE_PATH")" >> "$LOG_FILE"
+echo "ID: $ID" >> "$LOG_FILE"
+echo "Password: $PASSWORD" >> "$LOG_FILE"
+echo "Delete Password: $DELETE_PASSWORD" >> "$LOG_FILE"
+echo "Download URL: $DOWNLOAD_URL" >> "$LOG_FILE"
+echo "----------------------------------------" >> "$LOG_FILE"
+
+# Show the download URL and copy it to the clipboard
+echo "$DOWNLOAD_URL" | xclip -selection clipboard
+zenity --info --text="File uploaded successfully.\nDownload URL: $DOWNLOAD_URL\n\nThe URL has been copied to the clipboard."

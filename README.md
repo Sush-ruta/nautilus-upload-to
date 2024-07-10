@@ -35,7 +35,8 @@ Services
 | [Oshi](https://oshi.at/)           | [Firefox Send](https://send.vis.ee/)       | [KrakenFiles](https://krakenfiles.com/)      |
 | [pastor](https://c-v.sh/)          | [curl.by](http://curl.by)                  | [x0.at](http://x0.at)                        |
 | [t0.vc](http://t0.vc)              | [CCU.to](http://CCU.to)                    | [ki.tc](http://ki.tc)                        |
-| [BowFile](https://bowfile.com/)    | [buzzheavier](https://buzzheavier.com/)    |                                              |
+| [BowFile](https://bowfile.com/)    | [buzzheavier](https://buzzheavier.com/)    | [Tempfiles](https://tempfiles.ninja/)        |
+
 ### Pastebin Services
 |                                 | Pastebin Services         |                             |
 | ------------------------------- | ------------------------- | --------------------------- |
