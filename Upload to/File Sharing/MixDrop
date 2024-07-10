@@ -1,0 +1,57 @@
+#!/bin/bash
+
+CONFIG_FILE="$HOME/.config/.mixdrop_api.conf"
+
+# Function to prompt for API key and email if not set
+prompt_for_credentials() {
+    # Prompt for email
+    EMAIL=$(zenity --entry --title="MixDrop Email" --text="Enter your MixDrop email:")
+    if [ -z "$EMAIL" ]; then
+        zenity --error --text="Email is required. Exiting."
+        exit 1
+    fi
+
+    # Prompt for API key
+    API_KEY=$(zenity --entry --title="MixDrop API Key" --text="Enter your MixDrop API key:")
+    if [ -z "$API_KEY" ]; then
+        zenity --error --text="API key is required. Exiting."
+        exit 1
+    fi
+
+    # Save credentials to config file with proper quoting
+    echo "email=\"$EMAIL\"" > "$CONFIG_FILE"
+    echo "api_key=\"$API_KEY\"" >> "$CONFIG_FILE"
+}
+
+# Check if the config file exists, if not, create it
+if [ ! -f "$CONFIG_FILE" ]; then
+    touch "$CONFIG_FILE"
+    prompt_for_credentials
+else
+    source "$CONFIG_FILE"
+    # If config file is empty or missing required fields, prompt for credentials
+    if [ -z "$email" ] || [ -z "$api_key" ]; then
+        prompt_for_credentials
+    fi
+fi
+
+# Function to upload file to MixDrop
+upload_file() {
+    FILE_PATH="$1"
+    RESPONSE=$(curl -s -X POST -F "email=${email}" -F "key=${api_key}" -F "file=@${FILE_PATH}" "https://ul.mixdrop.ag/api")
+
+    # Check if the upload was successful
+    if echo "$RESPONSE" | grep -q '"success":true'; then
+        UPLOAD_URL=$(echo "$RESPONSE" | grep -oP '"url":"\K[^"]+')
+        zenity --info --title="Upload Complete" --text="File uploaded successfully.\nURL: $UPLOAD_URL"
+        echo "$UPLOAD_URL" | xclip -selection clipboard
+    else
+        zenity --error --title="Error" --text="Failed to upload the file.\nResponse: $RESPONSE"
+        exit 1
+    fi
+}
+
+# Main script
+for FILE in "$@"; do
+    upload_file "$FILE"
+done

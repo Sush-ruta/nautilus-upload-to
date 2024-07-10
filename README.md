@@ -36,7 +36,7 @@ Services
 | [pastor](https://c-v.sh/)           | [curl.by](http://curl.by)                  | [x0.at](http://x0.at)                        |
 | [t0.vc](http://t0.vc)               | [CCU.to](http://CCU.to)                    | [ki.tc](http://ki.tc)                        |
 | [BowFile](https://bowfile.com/)     | [buzzheavier](https://buzzheavier.com/)    | [Tempfiles](https://tempfiles.ninja/)        |
-| [FileDitch](https://fileditch.com/) | [pixeldrain](https://pixeldrain.com/)      |                                              |
+| [FileDitch](https://fileditch.com/) | [pixeldrain](https://pixeldrain.com/)      | [MixDrop](https://mixdrop.ag/)               |
 
 ### Pastebin Services
 |                                 | Pastebin Services         |                             |
