@@ -1,0 +1,64 @@
+#!/bin/bash
+
+CONFIG_FILE="$HOME/.config/.filelu_api.conf"
+
+# Function to prompt for API key if not set
+prompt_for_api_key() {
+    API_KEY=$(zenity --entry --title="FileLu API Key" --text="Enter your FileLu API key:")
+    if [ -z "$API_KEY" ]; then
+        zenity --error --text="API key is required. Exiting."
+        exit 1
+    fi
+    # Save API key to config file without quotes or additional text
+    echo "$API_KEY" > "$CONFIG_FILE"
+}
+
+# Check if the config file exists, if not, create it
+if [ ! -f "$CONFIG_FILE" ]; then
+    touch "$CONFIG_FILE"
+    prompt_for_api_key
+else
+    # Read the API key directly from the config file
+    api_key=$(cat "$CONFIG_FILE")
+    if [ -z "$api_key" ]; then
+        prompt_for_api_key
+    fi
+fi
+
+# Function to upload file to FileLu
+upload_file() {
+    FILE_PATH="$1"
+    
+    # Step 1: Select a server which is ready to accept an upload
+    SERVER_RESPONSE=$(curl -s "https://filelu.com/api/upload/server?key=${api_key}")
+    
+    if ! echo "$SERVER_RESPONSE" | grep -q '"status":200'; then
+        zenity --error --title="Error" --text="Failed to select a server.\nResponse: $SERVER_RESPONSE"
+        exit 1
+    fi
+    
+    # Extract session ID and upload URL
+    SESS_ID=$(echo "$SERVER_RESPONSE" | grep -oP '"sess_id":"\K[^"]+')
+    UPLOAD_URL=$(echo "$SERVER_RESPONSE" | grep -oP '"result":"\K[^"]+')
+    
+    # Step 2: Upload the file to the selected server
+    UPLOAD_RESPONSE=$(curl -s -F "sess_id=${SESS_ID}" -F "utype=prem" -F "file_0=@${FILE_PATH}" "${UPLOAD_URL}")
+    
+    if ! echo "$UPLOAD_RESPONSE" | grep -q '"file_status":"OK"'; then
+        zenity --error --title="Error" --text="Failed to upload the file.\nResponse: $UPLOAD_RESPONSE"
+        exit 1
+    fi
+    
+    # Extract file code and construct file URL
+    FILE_CODE=$(echo "$UPLOAD_RESPONSE" | grep -oP '"file_code":"\K[^"]+')
+    FILE_URL="https://filelu.com/${FILE_CODE}"
+    
+    # Display the result and copy to clipboard
+    echo "$FILE_URL" | xclip -selection clipboard
+    zenity --info --title="Upload Complete" --text="File uploaded successfully.\nURL: $FILE_URL\n(Link copied to clipboard)"
+}
+
+# Main script
+for FILE in "$@"; do
+    upload_file "$FILE"
+done

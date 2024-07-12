@@ -1,0 +1,40 @@
+#!/bin/bash
+
+# Function to upload file using wsend
+upload_file() {
+    FILE_PATH="$1"
+    RESPONSE=$(wsend "$FILE_PATH")
+
+    # Check if the upload was successful and extract the link
+    if [[ $? -eq 0 ]]; then
+        LINK=$(echo "$RESPONSE" | grep -oP 'https?://\S+')
+        if [[ -n "$LINK" ]]; then
+            echo "$LINK" | xclip -selection clipboard
+            zenity --info --title="Upload Complete" --text="File uploaded successfully.\n\nLink: $LINK\n\n(Link copied to clipboard)"
+        else
+            zenity --error --title="Upload Error" --text="Failed to extract the download link."
+        fi
+    else
+        zenity --error --title="Upload Error" --text="Failed to upload the file."
+    fi
+}
+
+# Check if wsend is installed
+if ! command -v wsend &> /dev/null; then
+    zenity --question --title="wsend Not Found" --text="The 'wsend' utility is not installed.\n\nDo you want to download and install 'wsend' automatically?" --ok-label="Yes" --cancel-label="No"
+    if [[ $? -ne 0 ]]; then
+        zenity --info --title="Manual Download" --text="Please download 'wsend' from the following link and install it manually:\n\nhttps://github.com/abemassry/wsend"
+        exit 1
+    else
+        sudo mkdir -p /usr/local/bin
+        sudo wget -q https://wsend.net/wsend -O /usr/local/bin/wsend
+        sudo chmod +x /usr/local/bin/wsend
+        zenity --info --title="Installation Complete" --text="wsend has been installed. Please close this app and sign in to wsend in the terminal. Relaunch the app after signing in.\n\nNote:\n- Max file size for Unregistered Account: 200MB\n- Max file size for Free Account: 2GB\n- Max file size for Paid Account: 10GB"
+        exit 0
+    fi
+fi
+
+# Main script
+for FILE in "$@"; do
+    upload_file "$FILE"
+done

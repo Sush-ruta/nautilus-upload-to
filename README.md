@@ -37,6 +37,7 @@ Services
 | [t0.vc](http://t0.vc)               | [CCU.to](http://CCU.to)                    | [ki.tc](http://ki.tc)                        |
 | [BowFile](https://bowfile.com/)     | [buzzheavier](https://buzzheavier.com/)    | [Tempfiles](https://tempfiles.ninja/)        |
 | [FileDitch](https://fileditch.com/) | [pixeldrain](https://pixeldrain.com/)      | [MixDrop](https://mixdrop.ag/)               |
+| [file.si](https://file.si/)         | [wsend](https://wsend.net/)                |                                              |
 
 ### Pastebin Services
 |                                 | Pastebin Services         |                             |
@@ -50,10 +51,10 @@ Services
 | [Freeimage.host](http://Freeimage.host) | [vgy.me](http://vgy.me) |     |
 
 ### Work-in-progress
-|                               | Work-in-progress         |                                               |
-| ----------------------------- | ------------------------ | --------------------------------------------- |
-| [put.re](http://put.re)       | [Uguu](https://uguu.se/) | [Disroot Upload](https://upload.disroot.org/) |
-| [Ufile.io](https://ufile.io/) |                          |                                               |
+|                               | Work-in-progress              |                                               |
+| ----------------------------- | ----------------------------- | --------------------------------------------- |
+| [put.re](http://put.re)       | [Uguu](https://uguu.se/)      | [Disroot Upload](https://upload.disroot.org/) |
+| [Ufile.io](https://ufile.io/) | [FileLu](https://filelu.com/) |                                               |
 
 Note on WIP Scripts
 -------------------
