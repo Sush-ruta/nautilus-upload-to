@@ -37,7 +37,7 @@ Services
 | [t0.vc](http://t0.vc)               | [CCU.to](http://CCU.to)                    | [ki.tc](http://ki.tc)                        |
 | [BowFile](https://bowfile.com/)     | [buzzheavier](https://buzzheavier.com/)    | [Tempfiles](https://tempfiles.ninja/)        |
 | [FileDitch](https://fileditch.com/) | [pixeldrain](https://pixeldrain.com/)      | [MixDrop](https://mixdrop.ag/)               |
-| [file.si](https://file.si/)         | [wsend](https://wsend.net/)                |                                              |
+| [file.si](https://file.si/)         | [wsend](https://wsend.net/)                | [Filebin](https://filebin.net/)              |
 
 ### Pastebin Services
 |                                 | Pastebin Services         |                             |

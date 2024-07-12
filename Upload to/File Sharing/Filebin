@@ -1,0 +1,61 @@
+#!/bin/bash
+
+CONFIG_FILE="$HOME/.config/.filebin.conf"
+USER_BIN_NAME="$USER"
+
+# Function to generate a random bin name
+generate_random_bin_name() {
+    tr -dc 'a-z' </dev/urandom | head -c 6
+}
+
+# Function to create a sample configuration file
+create_sample_config() {
+    cat <<EOL > "$CONFIG_FILE"
+# Filebin Configuration
+# If RANDOM_BIN is set to true, a random bin name will be generated for each upload.
+# Otherwise, the bin name will default to the username.
+RANDOM_BIN=false
+EOL
+}
+
+# Check if the config file exists; if not, create a sample config file
+if [ ! -f "$CONFIG_FILE" ]; then
+    create_sample_config
+fi
+
+# Source the config file
+source "$CONFIG_FILE"
+
+# Function to upload a file
+upload_file() {
+    local FILE_PATH="$1"
+    local FILE_NAME="$(basename "$FILE_PATH")"
+    local BIN_NAME="${USER_BIN_NAME}"
+
+    # If RANDOM_BIN is set to true in the config file, generate a random bin name
+    if [ "$RANDOM_BIN" == "true" ]; then
+        BIN_NAME=$(generate_random_bin_name)
+    fi
+
+    # Upload the file using curl
+    RESPONSE=$(curl -s -X POST -F "file=@${FILE_PATH}" "https://filebin.net/${BIN_NAME}/${FILE_NAME}")
+
+    # Extract the URL from the response
+    FILE_URL="https://filebin.net/${BIN_NAME}/${FILE_NAME}"
+
+    # Check if the upload was successful by checking the status code
+    if echo "$RESPONSE" | grep -q '"filename":' ; then
+        echo "File uploaded successfully."
+        echo "Bin name: ${BIN_NAME}"
+        echo "File URL: ${FILE_URL}"
+        echo -n "${FILE_URL}" | xclip -selection clipboard
+        zenity --info --text="File URL: ${FILE_URL}\nBin name: ${BIN_NAME}\n\nURL copied to clipboard."
+    else
+        zenity --error --text="Failed to upload $FILE_NAME"
+    fi
+}
+
+# Main script execution
+for FILE in "$@"; do
+    upload_file "$FILE"
+done
