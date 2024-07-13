@@ -1,0 +1,87 @@
+#!/bin/bash
+
+# Configuration file path
+CONFIG_FILE="$HOME/.config/.devdrive.conf"
+LOG_FILE="$HOME/.devdrive_uploads.log"
+
+# Ensure config file exists and create a sample if it doesn't
+if [ ! -f "$CONFIG_FILE" ]; then
+    cat <<EOL > "$CONFIG_FILE"
+# Devdrive Configuration
+# Change the values below as needed
+
+# API Key 1 (required)
+API_KEY1=""
+
+# API Key 2 (required)
+API_KEY2=""
+EOL
+fi
+
+# Load configuration values
+source "$CONFIG_FILE"
+
+# Check if API keys are empty and prompt for them
+if [ -z "$API_KEY1" ] || [ -z "$API_KEY2" ]; then
+    API_KEY1=$(zenity --entry --title="Devdrive API Key 1" --text="Please enter your Devdrive API Key 1:" --width=300)
+    API_KEY2=$(zenity --entry --title="Devdrive API Key 2" --text="Please enter your Devdrive API Key 2:" --width=300)
+    if [ -z "$API_KEY1" ] || [ -z "$API_KEY2" ]; then
+        zenity --error --title="API Keys Missing" --text="Both API keys are required."
+        exit 1
+    fi
+    # Update the config file
+    sed -i "s|^API_KEY1=.*|API_KEY1=\"$API_KEY1\"|" "$CONFIG_FILE"
+    sed -i "s|^API_KEY2=.*|API_KEY2=\"$API_KEY2\"|" "$CONFIG_FILE"
+fi
+
+# Reload configuration values to include the updated API keys
+source "$CONFIG_FILE"
+
+# Check if file is valid and meets the allowed formats and size
+FILE="$1"
+MIME_TYPE=$(file --mime-type -b "$FILE")
+FILE_SIZE=$(stat -c%s "$FILE")
+ALLOWED_TYPES=("image/jpeg" "image/png" "image/gif" "image/webp" "video/mp4" "application/octet-stream")
+
+if [ "$FILE_SIZE" -gt $((5 * 1024 * 1024 * 1024)) ]; then
+    zenity --error --title="Upload Error" --text="File size exceeds the 5 GB limit."
+    exit 1
+fi
+
+# Authorize and get the access token and account ID
+AUTH_RESPONSE=$(curl -s -X POST "https://devdrive.cloud/api/v2/authorize" -d "key1=$API_KEY1" -d "key2=$API_KEY2")
+
+ACCESS_TOKEN=$(echo "$AUTH_RESPONSE" | jq -r '.data.access_token')
+ACCOUNT_ID=$(echo "$AUTH_RESPONSE" | jq -r '.data.account_id')
+
+if [ "$ACCESS_TOKEN" = "null" ] || [ "$ACCOUNT_ID" = "null" ]; then
+    ERROR_MSG=$(echo "$AUTH_RESPONSE" | jq -r '._status')
+    zenity --error --title="Authorization Error" --text="Failed to authorize. Error: $ERROR_MSG"
+    exit 1
+fi
+
+# Upload the file
+UPLOAD_RESPONSE=$(curl -s -X POST "https://devdrive.cloud/api/v2/file/upload" \
+    -F "access_token=$ACCESS_TOKEN" \
+    -F "account_id=$ACCOUNT_ID" \
+    -F "upload_file=@$FILE")
+
+# Parse the response
+FILE_URL=$(echo "$UPLOAD_RESPONSE" | jq -r '.data[0].url')
+DELETE_URL=$(echo "$UPLOAD_RESPONSE" | jq -r '.data[0].delete_url')
+
+# Check if the upload was successful
+if [ "$FILE_URL" != "null" ]; then
+    # Copy URL to clipboard
+    echo -n "$FILE_URL" | xclip -selection clipboard
+    
+    # Show the success dialog
+    zenity --info --title="Upload Complete" --text="File uploaded successfully.\nURL: $FILE_URL\n(Link copied to clipboard)"
+    
+    # Log the upload details
+    echo "$(date '+%Y-%m-%d %H:%M:%S') | File: $(basename "$FILE") | URL: $FILE_URL | Delete URL: $DELETE_URL" >> "$LOG_FILE"
+else
+    # Show error dialog
+    ERROR_MSG=$(echo "$UPLOAD_RESPONSE" | jq -r '.response')
+    zenity --error --title="Upload Error" --text="Failed to upload the image. Error: $ERROR_MSG"
+fi
