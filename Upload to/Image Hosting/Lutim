@@ -1,0 +1,65 @@
+#!/bin/bash
+
+CONFIG_FILE="$HOME/.config/.lutim.conf"
+LOG_FILE="$HOME/.lutim_uploads.log"
+LUTIM_URL="https://lutim.ggc-project.de"
+
+# Function to create a sample configuration file
+create_sample_config() {
+    cat << EOF > "$CONFIG_FILE"
+# Lutim Configuration
+# Set to 1 if you want the image to be deleted at first view (default is 0)
+FIRST_VIEW=0
+# Number of days you want the image to stay (default is 0 for indefinite)
+DELETE_DAYS=0
+EOF
+}
+
+# Function to upload an image
+upload_image() {
+    local FILE_PATH="$1"
+    local FILE_NAME="$(basename "$FILE_PATH")"
+
+    # Check if the file is an image
+    if ! file --mime-type "$FILE_PATH" | grep -iE 'image/.*' > /dev/null; then
+        zenity --error --text="The file $FILE_NAME is not an image."
+        return 1
+    fi
+
+    # Upload the image using curl
+    RESPONSE=$(curl -s -F "format=json" -F "file=@$FILE_PATH" -F "first-view=$FIRST_VIEW" -F "delete-day=$DELETE_DAYS" "$LUTIM_URL")
+
+    # Extract relevant details using jq
+    SUCCESS=$(echo "$RESPONSE" | jq -r '.success')
+    if [ "$SUCCESS" != "true" ]; then
+        zenity --error --text="Failed to upload $FILE_NAME"
+        return 1
+    fi
+
+    URL=$(echo "$RESPONSE" | jq -r '.msg.short')
+    VIEWER_URL="$LUTIM_URL/$URL"
+
+    # Display the upload information
+    zenity --info --title="Upload Complete" --text="File uploaded successfully.\nURL: $VIEWER_URL\n(Link copied to clipboard)"
+    echo -n "$VIEWER_URL" | xclip -selection clipboard
+
+    # Log the upload details
+    echo "$(date) | File: $FILE_NAME | URL: $VIEWER_URL" >> "$LOG_FILE"
+}
+
+# Check if the config file exists; if not, create a sample config file
+if [ ! -f "$CONFIG_FILE" ]; then
+    create_sample_config
+fi
+
+# Source the config file to set variables
+source "$CONFIG_FILE"
+
+# Check if the FIRST_VIEW and DELETE_DAYS variables are set, otherwise use defaults
+FIRST_VIEW=${FIRST_VIEW:-0}
+DELETE_DAYS=${DELETE_DAYS:-0}
+
+# Main script execution
+for FILE in "$@"; do
+    upload_image "$FILE"
+done

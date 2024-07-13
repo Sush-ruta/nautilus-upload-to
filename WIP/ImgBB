@@ -1,0 +1,80 @@
+#!/bin/bash
+
+CONFIG_FILE="$HOME/.config/.imgbb.conf"
+LOG_FILE="$HOME/.imgbb_uploads.log"
+MAX_FILE_SIZE=33554432 # 32 MB in bytes
+
+# Function to create a sample configuration file
+create_sample_config() {
+    echo "# ImgBB API Key Configuration" > "$CONFIG_FILE"
+    echo "# Enter your API key below" >> "$CONFIG_FILE"
+    echo "IMGBB_API_KEY=" >> "$CONFIG_FILE"
+}
+
+# Function to upload an image
+upload_image() {
+    local FILE_PATH="$1"
+    local FILE_NAME="$(basename "$FILE_PATH")"
+
+    # Check if the file is an image
+    if ! file --mime-type "$FILE_PATH" | grep -iE 'image/.*' > /dev/null; then
+        zenity --error --text="The file $FILE_NAME is not an image."
+        return 1
+    fi
+
+    # Check the file size
+    if [ "$(stat -c%s "$FILE_PATH")" -gt "$MAX_FILE_SIZE" ]; then
+        zenity --error --text="The file $FILE_NAME exceeds the 32 MB size limit."
+        return 1
+    fi
+
+    # Upload the image using curl
+    RESPONSE=$(curl -s --location --request POST "https://api.imgbb.com/1/upload?key=$IMGBB_API_KEY" --form "image=@$FILE_PATH")
+
+    # Extract relevant details using jq
+    formatted_result=$(echo "$RESPONSE" | jq -r '
+        "Viewer\t: \(.url_viewer)\n" +
+        "Direct\t: \(.url)\n" +
+        "--\n" +
+        "Thumb URL\t: \(.thumb_url)\n" +
+        "Medium URL\t: \(.medium_url // .url)\n" +
+        "Delete URL\t: \(.delete_url)\n" +
+        "--\n" +
+        "Expires at\t: \(.expiration)\n"
+    ')
+
+    if [ -z "$formatted_result" ]; then
+        zenity --error --text="Failed to upload $FILE_NAME"
+        return 1
+    else
+        # Fix the URLs
+        url=$(echo "$formatted_result" | grep -oP 'Direct\s*:\s*\Khttps?://[^[:space:]]+')
+        delete_url=$(echo "$formatted_result" | grep -oP 'Delete\s*URL\s*:\s*\Khttps?://[^[:space:]]+')
+
+        zenity --info --width=600 --title="ImgBB Upload Success" --text="$formatted_result\n\nURL copied to clipboard."
+        echo -n "$url" | xclip -selection clipboard
+
+        # Log the upload details
+        echo "$(date) | File: $FILE_NAME | URL: $url | Delete URL: $delete_url" >> "$LOG_FILE"
+    fi
+}
+
+# Check if the config file exists; if not, create a sample config file
+if [ ! -f "$CONFIG_FILE" ]; then
+    create_sample_config
+    exit 1
+fi
+
+# Source the config file to set variables
+source "$CONFIG_FILE"
+
+# Check if the API key is empty
+if [ -z "$IMGBB_API_KEY" ]; then
+    IMGBB_API_KEY=$(zenity --entry --title="ImgBB API Key" --text="Please enter your ImgBB API key:")
+    echo "IMGBB_API_KEY=$IMGBB_API_KEY" > "$CONFIG_FILE"
+fi
+
+# Main script execution
+for FILE in "$@"; do
+    upload_image "$FILE"
+done

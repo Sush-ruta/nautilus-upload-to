@@ -1,0 +1,94 @@
+#!/bin/bash
+
+# Configuration file path
+CONFIG_FILE="$HOME/.config/.imgchest.conf"
+
+# Ensure config file exists and create a sample if it doesn't
+if [ ! -f "$CONFIG_FILE" ]; then
+    cat <<EOL > "$CONFIG_FILE"
+# Image Chest Configuration
+# Change the values below as needed
+
+# Anonymous upload: true or false (default: false)
+ANONYMOUS="false"
+
+# Access Token (if you want non-anonymous uploads, set your access token here)
+IMGCHEST_ACCESS_TOKEN=""
+
+# Privacy setting: hidden, public, or secret (default: hidden)
+PRIVACY="hidden"
+
+# NSFW setting: true or false (default: false)
+NSFW="false"
+EOL
+fi
+
+# Load configuration values
+source "$CONFIG_FILE"
+
+# Check if file is an image and meets the allowed formats and size
+FILE="$1"
+MIME_TYPE=$(file --mime-type -b "$FILE")
+FILE_SIZE=$(stat -c%s "$FILE")
+ALLOWED_TYPES=("image/jpeg" "image/png" "image/gif" "image/webp" "video/mp4")
+
+if [[ ! " ${ALLOWED_TYPES[@]} " =~ " $MIME_TYPE " ]]; then
+    zenity --error --title="Upload Error" --text="Unsupported file format. Allowed formats: jpg, jpeg, png, gif, webp, mp4."
+    exit 1
+fi
+
+if [ "$FILE_SIZE" -gt $((30 * 1024 * 1024)) ]; then
+    zenity --error --title="Upload Error" --text="File size exceeds the 30 MB limit."
+    exit 1
+fi
+
+# If anonymous upload is false and access token is empty, prompt for access token
+if [ "$ANONYMOUS" = "false" ] && [ -z "$IMGCHEST_ACCESS_TOKEN" ]; then
+    IMGCHEST_ACCESS_TOKEN=$(zenity --entry --title="Access Token" --text="Please enter your Image Chest access token:" --width=300)
+    # Check if the entry was cancelled or empty
+    if [ -z "$IMGCHEST_ACCESS_TOKEN" ]; then
+        zenity --error --title="Access Token Missing" --text="Access token is required for non-anonymous uploads."
+        exit 1
+    fi
+    sed -i "s|^IMGCHEST_ACCESS_TOKEN=.*|IMGCHEST_ACCESS_TOKEN=\"$IMGCHEST_ACCESS_TOKEN\"|" "$CONFIG_FILE"
+fi
+
+# Reload configuration values to include the updated access token
+source "$CONFIG_FILE"
+
+# Prepare title for the post
+TITLE="$(basename "$FILE") - $(date '+%Y-%m-%d %H:%M:%S')"
+
+# Upload the image
+if [ "$ANONYMOUS" = "false" ]; then
+    RESPONSE=$(curl -s -X POST https://api.imgchest.com/v1/post \
+        -H "Authorization: Bearer $IMGCHEST_ACCESS_TOKEN" \
+        -F "title=$TITLE" \
+        -F "privacy=$PRIVACY" \
+        -F "nsfw=$NSFW" \
+        -F "anonymous=$ANONYMOUS" \
+        -F "images[]=@$FILE")
+else
+    RESPONSE=$(curl -s -X POST https://api.imgchest.com/v1/post \
+        -F "title=$TITLE" \
+        -F "privacy=$PRIVACY" \
+        -F "nsfw=$NSFW" \
+        -F "anonymous=$ANONYMOUS" \
+        -F "images[]=@$FILE")
+fi
+
+# Parse the response
+FILE_URL=$(echo "$RESPONSE" | jq -r '.data.images[0].link')
+
+# Check if the upload was successful
+if [ "$FILE_URL" != "null" ]; then
+    # Copy URL to clipboard
+    echo -n "$FILE_URL" | xclip -selection clipboard
+    
+    # Show the success dialog
+    zenity --info --title="Upload Complete" --text="File uploaded successfully.\nURL: $FILE_URL\n(Link copied to clipboard)"
+else
+    # Show error dialog
+    ERROR_MSG=$(echo "$RESPONSE" | jq -r '.message')
+    zenity --error --title="Upload Error" --text="Failed to upload the image. Error: $ERROR_MSG"
+fi

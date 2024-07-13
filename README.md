@@ -46,15 +46,16 @@ Services
 | [paste.rs](http://paste.rs)     |                           |                             |
 
 ### Image Hosting Services
-|                                         | Image Hosting Services  |     |
-| --------------------------------------- | ----------------------- | --- |
-| [Freeimage.host](http://Freeimage.host) | [vgy.me](http://vgy.me) |     |
+|                                         | Image Hosting Services  |                                        |
+| --------------------------------------- | ----------------------- | -------------------------------------- |
+| [Freeimage.host](http://Freeimage.host) | [vgy.me](http://vgy.me) | [Lutim](https://lutim.ggc-project.de/) |
 
 ### Work-in-progress
-|                               | Work-in-progress              |                                               |
-| ----------------------------- | ----------------------------- | --------------------------------------------- |
-| [put.re](http://put.re)       | [Uguu](https://uguu.se/)      | [Disroot Upload](https://upload.disroot.org/) |
-| [Ufile.io](https://ufile.io/) | [FileLu](https://filelu.com/) |                                               |
+|                                      | Work-in-progress              |                                               |
+| ------------------------------------ | ----------------------------- | --------------------------------------------- |
+| [put.re](http://put.re)              | [Uguu](https://uguu.se/)      | [Disroot Upload](https://upload.disroot.org/) |
+| [Ufile.io](https://ufile.io/)        | [FileLu](https://filelu.com/) | [ImgBB](https://imgbb.com/)                   |
+| [Image Chest](https://imgchest.com/) |                               |                                               |
 
 Note on WIP Scripts
 -------------------
