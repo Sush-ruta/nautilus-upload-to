@@ -50,6 +50,7 @@ Services
 |                                         | Image Hosting Services  |                                        |
 | --------------------------------------- | ----------------------- | -------------------------------------- |
 | [Freeimage.host](http://Freeimage.host) | [vgy.me](http://vgy.me) | [Lutim](https://lutim.ggc-project.de/) |
+| [Streamtape](https://streamtape.com/)   |                         |                                        |
 
 ### Work-in-progress
 |                                      | Work-in-progress              |                                               |

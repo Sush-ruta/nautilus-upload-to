@@ -1,0 +1,82 @@
+#!/bin/bash
+
+CONFIG_FILE="$HOME/.config/.streamtape.conf"
+
+# Function to create a sample config file if it doesn't exist
+create_config_file() {
+    cat <<EOF > "$CONFIG_FILE"
+# Streamtape Configuration
+# Change the values below as needed
+
+# API Login
+STREAMTAPE_LOGIN=""
+
+# API Key
+STREAMTAPE_KEY=""
+EOF
+}
+
+# Check if config file exists, if not, create it
+if [ ! -f "$CONFIG_FILE" ]; then
+    create_config_file
+fi
+
+# Load configuration
+source "$CONFIG_FILE"
+
+# Prompt for login and key if not set
+if [ -z "$STREAMTAPE_LOGIN" ]; then
+    STREAMTAPE_LOGIN=$(zenity --entry --title="Streamtape API Login" --text="Enter your Streamtape API Login:")
+    echo "STREAMTAPE_LOGIN=\"$STREAMTAPE_LOGIN\"" >> "$CONFIG_FILE"
+fi
+
+if [ -z "$STREAMTAPE_KEY" ]; then
+    STREAMTAPE_KEY=$(zenity --entry --title="Streamtape API Key" --text="Enter your Streamtape API Key:")
+    echo "STREAMTAPE_KEY=\"$STREAMTAPE_KEY\"" >> "$CONFIG_FILE"
+fi
+
+# Get the file path from the context menu
+FILE_PATH="$1"
+
+if [ -z "$FILE_PATH" ]; then
+    zenity --error --title="Error" --text="No file selected."
+    exit 1
+fi
+
+# Check file size (maximum 15 GB)
+FILE_SIZE=$(stat --printf="%s" "$FILE_PATH")
+MAX_SIZE=$((15 * 1024 * 1024 * 1024))
+if [ "$FILE_SIZE" -gt "$MAX_SIZE" ]; then
+    zenity --error --title="Error" --text="File size exceeds the 15 GB limit."
+    exit 1
+fi
+
+# Calculate the SHA256 hash of the file
+SHA256_HASH=$(sha256sum "$FILE_PATH" | awk '{print $1}')
+
+# Get upload URL from Streamtape API
+RESPONSE=$(curl -s "https://api.streamtape.com/file/ul?login=$STREAMTAPE_LOGIN&key=$STREAMTAPE_KEY&sha256=$SHA256_HASH")
+
+UPLOAD_URL=$(echo "$RESPONSE" | jq -r '.result.url')
+
+# Check if the upload URL was obtained successfully
+if [ -z "$UPLOAD_URL" ]; then
+    zenity --error --title="Error" --text="Failed to get upload URL. Please check your login and key."
+    exit 1
+fi
+
+# Upload the file to Streamtape
+UPLOAD_RESPONSE=$(curl -F "file1=@$FILE_PATH" "$UPLOAD_URL")
+
+# Extract file URL from the response
+FILE_URL=$(echo "$UPLOAD_RESPONSE" | jq -r '.result.url')
+
+# Check if the file was uploaded successfully
+if [ -z "$FILE_URL" ]; then
+    zenity --error --title="Upload Failed" --text="File upload failed. Please try again."
+    exit 1
+fi
+
+# Show success message with the file URL and copy it to clipboard
+zenity --info --title="Upload Complete" --text="File uploaded successfully.\nURL: $FILE_URL\n(Link copied to clipboard)"
+echo -n "$FILE_URL" | xclip -selection clipboard
